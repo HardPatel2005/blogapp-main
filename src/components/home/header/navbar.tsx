@@ -60,7 +60,7 @@ export function Navbar() {
           {/* Right Section - Search & Actions */}
           <div className="flex items-center gap-4">
             {/* Search Bar (Desktop) */}
-            <SearchInput/>
+            <SearchInput />
 
             {/* Theme Toggle */}
             <ModeToggle />

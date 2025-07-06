@@ -22,7 +22,7 @@ const page = async () => {
 
           {/* Top Articles */}
           <Suspense fallback={<h1>Loading....</h1>}>
-            <TopArticles/>
+            <TopArticles />
           </Suspense>
 
           <div className="mt-12 text-center">

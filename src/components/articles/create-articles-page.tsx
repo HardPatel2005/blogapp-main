@@ -64,6 +64,7 @@ export function CreateArticlePage() {
                 <option value="web-development">Web Development</option>
                 <option value="Places in the world">Places</option>
                 <option value="Comedy">Comedy</option>
+                <option value="story about life😁">story</option>
               </select>
               
               {formState.errors.category && (
