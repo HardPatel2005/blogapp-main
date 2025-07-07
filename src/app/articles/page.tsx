@@ -3,21 +3,20 @@ import {
 } from "@/components/articles/all-articles-page";
 import ArticleSearchInput from "@/components/articles/article-search-input";
 import { Button } from "@/components/ui/button";
-import { Suspense } from "react";
 import { fetchArticleByQuery } from "@/lib/query/fetch-articles";
 import Link from "next/link";
 import { AllArticlesPageSkeleton } from "@/components/articles/all-articles-skeleton";
 
-// This matches Next.js app directory requirements
+// Optional: mark page as dynamic if using data-fetching
 export const dynamic = "force-dynamic";
 
 const ITEMS_PER_PAGE = 3;
 
-// ✅ Final Correct Exported Page Component
+// ✅ Page Component for Next.js App Router
 export default async function Page({
   searchParams,
 }: {
-  searchParams: { search?: string; page?: string };
+  searchParams?: { search?: string; page?: string };
 }) {
   const searchText = searchParams?.search || "";
   const currentPage = Number(searchParams?.page) || 1;
@@ -30,28 +29,31 @@ export default async function Page({
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        {/* Page Header */}
         <div className="mb-12 space-y-6 text-center">
           <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             All Articles
           </h1>
-          <Suspense>
-            <ArticleSearchInput />
-          </Suspense>
+
+          {/* ✅ Client-side input can be suspended */}
+          <ArticleSearchInput />
         </div>
 
-        <Suspense fallback={<AllArticlesPageSkeleton />}>
+        {/* ✅ Do NOT wrap server components in Suspense */}
+        {articles.length === 0 ? (
+          <AllArticlesPageSkeleton />
+        ) : (
           <AllArticlesPage articles={articles} />
-        </Suspense>
+        )}
 
+        {/* Pagination */}
         <div className="mt-12 flex justify-center gap-2">
-          {/* Prev Button */}
           <Link href={`?search=${searchText}&page=${currentPage - 1}`}>
             <Button variant="ghost" size="sm" disabled={currentPage === 1}>
               ← Prev
             </Button>
           </Link>
 
-          {/* Page Numbers */}
           {Array.from({ length: totalPages }).map((_, index) => (
             <Link
               key={index}
@@ -69,7 +71,6 @@ export default async function Page({
             </Link>
           ))}
 
-          {/* Next Button */}
           <Link href={`?search=${searchText}&page=${currentPage + 1}`}>
             <Button
               variant="ghost"
