@@ -3,19 +3,19 @@ import {
 } from "@/components/articles/all-articles-page";
 import ArticleSearchInput from "@/components/articles/article-search-input";
 import { Button } from "@/components/ui/button";
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import { fetchArticleByQuery } from "@/lib/query/fetch-articles";
 import Link from "next/link";
 import { AllArticlesPageSkeleton } from "@/components/articles/all-articles-skeleton";
 
 const ITEMS_PER_PAGE = 3;
 
-// ✅ Matches the correct Next.js App Router typing
-const Page = async ({
+// ✅ MATCHES Next.js App Router page component signature
+export default async function Page({
   searchParams,
 }: {
   searchParams?: { search?: string; page?: string };
-}) => {
+}) {
   const searchText = searchParams?.search || "";
   const currentPage = Number(searchParams?.page) || 1;
   const skip = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -41,12 +41,14 @@ const Page = async ({
         </Suspense>
 
         <div className="mt-12 flex justify-center gap-2">
+          {/* Prev Button */}
           <Link href={`?search=${searchText}&page=${currentPage - 1}`}>
             <Button variant="ghost" size="sm" disabled={currentPage === 1}>
               ← Prev
             </Button>
           </Link>
 
+          {/* Page Numbers */}
           {Array.from({ length: totalPages }).map((_, index) => (
             <Link
               key={index}
@@ -64,6 +66,7 @@ const Page = async ({
             </Link>
           ))}
 
+          {/* Next Button */}
           <Link href={`?search=${searchText}&page=${currentPage + 1}`}>
             <Button
               variant="ghost"
@@ -77,6 +80,4 @@ const Page = async ({
       </main>
     </div>
   );
-};
-
-export default Page;
+}
