@@ -12,19 +12,15 @@ export function AllArticlesPageSkeleton() {
           className="group relative overflow-hidden transition-all hover:shadow-lg"
         >
           <div className="p-6">
-            {/* Image */}
             <Skeleton className="mb-4 h-48 w-full rounded-xl bg-gradient-to-br from-purple-100/50 to-blue-100/50 dark:from-purple-900/20 dark:to-blue-900/20" />
-            {/* Title */}
             <Skeleton className="h-6 w-3/4 rounded-lg" />
-            {/* Category */}
             <Skeleton className="mt-2 h-4 w-1/2 rounded-lg" />
-            {/* Author Info */}
             <div className="mt-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Skeleton className="h-8 w-8 rounded-full" />
-                <Skeleton className="h-4 w-20 rounded-lg" />
+                <Skeleton className="h-4 w-20 rounded-lg " />
               </div>
-              <Skeleton className="h-4 w-24 rounded-lg" />
+              <Skeleton className="h-4 w-24 rounded-lg " />
             </div>
           </div>
         </Card>
