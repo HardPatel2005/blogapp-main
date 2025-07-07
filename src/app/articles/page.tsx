@@ -8,13 +8,16 @@ import { fetchArticleByQuery } from "@/lib/query/fetch-articles";
 import Link from "next/link";
 import { AllArticlesPageSkeleton } from "@/components/articles/all-articles-skeleton";
 
+// This matches Next.js app directory requirements
+export const dynamic = "force-dynamic";
+
 const ITEMS_PER_PAGE = 3;
 
-// ✅ MATCHES Next.js App Router page component signature
+// ✅ Final Correct Exported Page Component
 export default async function Page({
   searchParams,
 }: {
-  searchParams?: { search?: string; page?: string };
+  searchParams: { search?: string; page?: string };
 }) {
   const searchText = searchParams?.search || "";
   const currentPage = Number(searchParams?.page) || 1;
