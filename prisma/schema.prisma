@@ -8,48 +8,56 @@ datasource db {
 }
 
 model User {
-  id          String     @id @default(cuid())
-  clerkUserId String     @unique
-  email       String     @unique
+  id          String  @id @default(cuid())
+  clerkUserId String  @unique
+  email       String  @unique
   name        String
   imageUrl    String?
-  role        String?
-  articles    Articles[]
-  comments    Comment[]
-  likes       Like[] // A user can like multiple articles
+  role        String? @default("user") // optional: role defaults to 'user'
+
+  // Relations
+  articles Articles[] // One-to-many: User → Articles
+  comments Comment[] // One-to-many: User → Comments
+  likes    Like[] // One-to-many: User → Likes
 }
 
 model Articles {
-  id            String    @id @default(cuid())
+  id            String   @id @default(cuid())
   title         String
   content       String
   category      String
   featuredImage String
-  author        User      @relation(fields: [authorId], references: [id])
-  authorId      String
-  comments      Comment[]
-  likes         Like[] // An article can have multiple likes
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime @default(now())
+
+  // Relations
+  author   User      @relation(fields: [authorId], references: [id])
+  authorId String
+  comments Comment[] // One-to-many: Article → Comments
+  likes    Like[] // One-to-many: Article → Likes
 }
 
 model Comment {
   id        String   @id @default(cuid())
   body      String
+  createdAt DateTime @default(now())
+
+  // Relations
   articleId String
   article   Articles @relation(fields: [articleId], references: [id])
   authorId  String
   author    User     @relation(fields: [authorId], references: [id])
-  createdAt DateTime @default(now())
 }
 
 model Like {
   id        String   @id @default(cuid())
   isLiked   Boolean  @default(false)
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  article   Articles @relation(fields: [articleId], references: [id])
-  articleId String
   createdAt DateTime @default(now())
 
-  @@unique([userId, articleId]) // Ensures a user can like an article only once
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  articleId String
+  article   Articles @relation(fields: [articleId], references: [id])
+
+  @@unique([userId, articleId]) // Prevent duplicate likes per user/article
 }

@@ -1,11 +1,17 @@
 "use client";
-import { FormEvent, startTransition, useActionState, useState } from "react";
+
+import { FormEvent, useState, useTransition } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
 import { Articles } from "@prisma/client";
 import { updateArticles } from "@/actions/update-article";
 import Image from "next/image";
@@ -13,23 +19,25 @@ import Image from "next/image";
 type EditPropsPage = {
   article: Articles;
 };
+
 const EditArticlePage: React.FC<EditPropsPage> = ({ article }) => {
   const [content, setContent] = useState(article.content);
-  const [formState, action, isPending] = useActionState(
-    updateArticles.bind(null, article.id),
-    { errors: {} }
-  );
+  const [isPending, startTransition] = useTransition();
+  const [formErrors, setFormErrors] = useState<Record<string, string | string[]>>({});
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
     formData.append("content", content);
-
-    // Wrap the action call in startTransition
-    startTransition(() => {
-      action(formData);
-    });
+startTransition(async () => {
+  const result = await updateArticles(article.id, { errors: {} }, formData);
+  if (result?.errors) {
+    setFormErrors(result.errors);
+  } else {
+    window.location.href = `/articles/${article.id}`;
+  }
+});
   };
 
   return (
@@ -40,6 +48,7 @@ const EditArticlePage: React.FC<EditPropsPage> = ({ article }) => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Title */}
             <div className="space-y-2">
               <Label htmlFor="title">Article Title</Label>
               <Input
@@ -49,20 +58,21 @@ const EditArticlePage: React.FC<EditPropsPage> = ({ article }) => {
                 placeholder="Enter article title"
                 required
               />
-              {formState.errors.title && (
+              {formErrors.title && (
                 <span className="font-medium text-sm text-red-500">
-                  {formState.errors.title}
+                  {formErrors.title as string}
                 </span>
               )}
             </div>
 
+            {/* Category */}
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
               <select
                 id="category"
                 name="category"
                 defaultValue={article.category}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 required
               >
                 <option value="">Select Category</option>
@@ -70,13 +80,14 @@ const EditArticlePage: React.FC<EditPropsPage> = ({ article }) => {
                 <option value="programming">Programming</option>
                 <option value="web-development">Web Development</option>
               </select>
-              {formState.errors.category && (
+              {formErrors.category && (
                 <span className="font-medium text-sm text-red-500">
-                  {formState.errors.category}
+                  {formErrors.category as string}
                 </span>
               )}
             </div>
 
+            {/* Featured Image */}
             <div className="space-y-2">
               <Label htmlFor="featuredImage">Featured Image</Label>
               {article.featuredImage && (
@@ -85,7 +96,7 @@ const EditArticlePage: React.FC<EditPropsPage> = ({ article }) => {
                     src={article.featuredImage}
                     alt="Current featured"
                     width={192}
-                    height={128}  
+                    height={128}
                     className="object-cover rounded-md"
                   />
                   <p className="text-sm text-muted-foreground mt-2">
@@ -99,33 +110,35 @@ const EditArticlePage: React.FC<EditPropsPage> = ({ article }) => {
                 type="file"
                 accept="image/*"
               />
-              {formState.errors.featuredImage && (
+              {formErrors.featuredImage && (
                 <span className="font-medium text-sm text-red-500">
-                  {formState.errors.featuredImage}
-                </span>
-              )}
-            </div>
-            <div className="space-y-2">
-              <Label>Content</Label>
-              <ReactQuill
-                theme="snow"
-                // defaultValue={}
-                value={content}
-                onChange={setContent}
-              />
-              {formState.errors.content && (
-                <span className="font-medium text-sm text-red-500">
-                  {formState.errors.content[0]}
+                  {formErrors.featuredImage as string}
                 </span>
               )}
             </div>
 
+            {/* Content */}
+            <div className="space-y-2">
+              <Label>Content</Label>
+              <ReactQuill
+                theme="snow"
+                value={content}
+                onChange={setContent}
+              />
+              {formErrors.content && (
+                <span className="font-medium text-sm text-red-500">
+                  {(formErrors.content as string[])[0]}
+                </span>
+              )}
+            </div>
+
+            {/* Buttons */}
             <div className="flex justify-end gap-4">
-              <Button type="button" variant="outline">
+              <Button type="button" variant="outline" onClick={() => window.history.back()}>
                 Discard Changes
               </Button>
               <Button disabled={isPending} type="submit">
-                {isPending ? "Loading..." : "Update Article"}
+                {isPending ? "Updating..." : "Update Article"}
               </Button>
             </div>
           </form>
@@ -134,4 +147,5 @@ const EditArticlePage: React.FC<EditPropsPage> = ({ article }) => {
     </div>
   );
 };
+
 export default EditArticlePage;
