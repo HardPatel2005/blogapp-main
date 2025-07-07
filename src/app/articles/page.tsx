@@ -1,5 +1,4 @@
 import { AllArticlesPage } from "@/components/articles/all-articles-page";
-import ArticleSearchInput from "@/components/articles/article-search-input";
 import { Button } from "@/components/ui/button";
 import { Suspense } from "react";
 import { fetchArticleByQuery } from "@/lib/query/fetch-articles";
@@ -10,19 +9,19 @@ export const dynamic = "force-dynamic";
 
 const ITEMS_PER_PAGE = 6;
 
-// ✅ Define PageProps locally
+// PageProps for route parameters
 type PageProps = {
   searchParams?: {
-    search?: string;
     page?: string;
   };
 };
 
 export default async function Page({ searchParams }: PageProps) {
-  const searchText = searchParams?.search || "";
   const currentPage = Number(searchParams?.page) || 1;
   const skip = (currentPage - 1) * ITEMS_PER_PAGE;
 
+  // 🟢 No search filtering
+  const searchText = "";
   const { articles, total } = await fetchArticleByQuery(searchText, skip, ITEMS_PER_PAGE);
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
@@ -32,26 +31,23 @@ export default async function Page({ searchParams }: PageProps) {
         {/* Header */}
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold">All Articles</h1>
-          <Suspense>
-            <ArticleSearchInput />
-          </Suspense>
         </div>
 
-        {/* Articles */}
+        {/* Articles Grid */}
         <Suspense fallback={<AllArticlesPageSkeleton />}>
           <AllArticlesPage articles={articles} />
         </Suspense>
 
         {/* Pagination */}
         <div className="mt-12 flex justify-center gap-2">
-          <Link href={`?search=${searchText}&page=${currentPage - 1}`}>
+          <Link href={`?page=${currentPage - 1}`}>
             <Button variant="ghost" size="sm" disabled={currentPage === 1}>
               ← Prev
             </Button>
           </Link>
 
           {Array.from({ length: totalPages }).map((_, index) => (
-            <Link key={index} href={`?search=${searchText}&page=${index + 1}`}>
+            <Link key={index} href={`?page=${index + 1}`}>
               <Button
                 variant={currentPage === index + 1 ? "destructive" : "ghost"}
                 size="sm"
@@ -62,7 +58,7 @@ export default async function Page({ searchParams }: PageProps) {
             </Link>
           ))}
 
-          <Link href={`?search=${searchText}&page=${currentPage + 1}`}>
+          <Link href={`?page=${currentPage + 1}`}>
             <Button variant="ghost" size="sm" disabled={currentPage === totalPages}>
               Next →
             </Button>
