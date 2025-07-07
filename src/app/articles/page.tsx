@@ -8,15 +8,16 @@ import { fetchArticleByQuery } from "@/lib/query/fetch-articles";
 import Link from "next/link";
 import { AllArticlesPageSkeleton } from "@/components/articles/all-articles-skeleton";
 
-type SearchPageProps = {
-  searchParams: { search?: string; page?: string };
-};
-
 const ITEMS_PER_PAGE = 3;
 
-const Page = async ({ searchParams }: SearchPageProps) => {
-  const searchText = searchParams.search || "";
-  const currentPage = Number(searchParams.page) || 1;
+// ✅ Matches the correct Next.js App Router typing
+const Page = async ({
+  searchParams,
+}: {
+  searchParams?: { search?: string; page?: string };
+}) => {
+  const searchText = searchParams?.search || "";
+  const currentPage = Number(searchParams?.page) || 1;
   const skip = (currentPage - 1) * ITEMS_PER_PAGE;
   const take = ITEMS_PER_PAGE;
 
