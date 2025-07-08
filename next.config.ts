@@ -1,4 +1,7 @@
-import type { NextConfig } from "next";
+// next.config.ts
+
+// Fix this line:
+import type { NextConfig } from "next/types/config"; // Correct import for Next.js 15
 
 const nextConfig: NextConfig = {
   images: {

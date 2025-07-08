@@ -1,4 +1,8 @@
-import type { Metadata } from "next";
+// src/app/layout.tsx
+
+// Make sure you ONLY have this line for Metadata:
+import type { Metadata } from "next/types"; // Correct import for Next.js 15
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
@@ -27,12 +31,6 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
-        {/*
-          CRUCIAL FIX: Ensure no whitespace (newlines, spaces, tabs)
-          between the <html> tag and the <body> tag.
-          The <body> tag should immediately follow the <html> tag on the next line,
-          or even on the same line if preferred, without any intervening characters.
-        */}
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >

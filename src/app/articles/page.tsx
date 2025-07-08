@@ -1,6 +1,6 @@
-// src/app/articles/page.tsx
-
-import { AllArticlesPage } from "@/components/articles/all-articles-page";
+import {
+  AllArticlesPage,
+} from "@/components/articles/all-articles-page";
 import ArticleSearchInput from "@/components/articles/article-search-input";
 import { Button } from "@/components/ui/button";
 import { fetchArticleByQuery } from "@/lib/query/fetch-articles";
@@ -12,17 +12,18 @@ export const dynamic = "force-dynamic";
 
 const ITEMS_PER_PAGE = 6;
 
-// ✅ Define a precise interface for PageProps
-interface ArticlePageProps {
-  searchParams?: {
-    search?: string;
-    page?: string;
-    // Add any other potential search params here if they exist in your URLs
-  };
-}
-
 // ✅ Page Component for Next.js App Router
-export default async function Page({ searchParams }: ArticlePageProps) {
+// You no longer need to define ArticlePageProps here if global.d.ts is set up.
+// TypeScript will infer the type of searchParams from the augmented PageProps.
+export default async function Page({
+  searchParams, // Type is now inferred from global.d.ts
+}: {
+  // You can remove this explicit type here, or keep it if you prefer.
+  // If you remove it, TypeScript will use the global.d.ts definition.
+  // For maximum robustness against Vercel type errors, keeping it explicit here
+  // is often harmless and can reinforce the type.
+  searchParams?: { search?: string; page?: string };
+}) {
   const searchText = searchParams?.search || "";
   const currentPage = Number(searchParams?.page) || 1;
   const skip = (currentPage - 1) * ITEMS_PER_PAGE;
