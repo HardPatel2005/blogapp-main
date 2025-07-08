@@ -1,19 +1,20 @@
-"use client"
+// src/components/dark-mode.tsx
+"use client"; // <--- THIS IS CRUCIAL AND MUST BE AT THE VERY TOP
 
-import * as React from "react"
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
+import * as React from "react";
+import { Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
-export function ModeToggle() {
-  const { setTheme } = useTheme()
+export function ModeToggle() { // Or ThemeToggle, depending on your actual export
+  const { setTheme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -36,5 +37,5 @@ export function ModeToggle() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

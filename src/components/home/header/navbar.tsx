@@ -1,11 +1,13 @@
-"use client";
+// src/components/home/header/navbar.tsx
+"use client"; // This component uses client-side hooks (useState, Clerk hooks)
+
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
-import { ModeToggle } from "../../dark-mode";
+import { Button } from "@/components/ui/button"; // Assuming Shadcn UI Button
+import { Menu, X } from "lucide-react"; // For mobile menu icon
+import { ModeToggle } from "@/components/dark-mode"; // CORRECTED IMPORT PATH AND NAME
+
 import Link from "next/link";
-import { SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import { SignedOut, SignInButton, SignUpButton, SignedIn, UserButton } from "@clerk/nextjs";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,45 +31,68 @@ export function Navbar() {
               <Link href="/articles" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Articles</Link>
               <Link href="/tutorials" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Tutorials</Link>
               <Link href="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">About</Link>
-              <Link href="/dashboard" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Dashboard</Link>
+              {/* Only show Dashboard link if user is signed in */}
+              <SignedIn>
+                <Link href="/dashboard" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">Dashboard</Link>
+              </SignedIn>
             </div>
           </div>
 
           {/* Right Section - Theme + Auth */}
           <div className="flex items-center gap-4">
-            <ModeToggle />
+            <ModeToggle /> {/* Changed from ThemeToggle to ModeToggle */}
+
+            {/* Auth Buttons / User Button */}
             <SignedIn>
-              <UserButton afterSignOutUrl="/" />
+              <UserButton afterSignOutUrl="/" /> {/* Clerk's user profile button */}
             </SignedIn>
             <SignedOut>
               <div className="hidden md:flex items-center gap-2">
-                <SignInButton><Button variant="outline">Login</Button></SignInButton>
-                <SignUpButton><Button>Sign up</Button></SignUpButton>
+                {/* Ensure SignInButton/SignUpButton wrap a clickable element like Button */}
+                <SignInButton mode="modal">
+                  <Button variant="outline">Login</Button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <Button>Sign up</Button>
+                </SignUpButton>
               </div>
             </SignedOut>
 
-            <Button variant="ghost" size="icon" className="md:hidden text-muted-foreground hover:text-foreground" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+            {/* Mobile Menu Toggle Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden text-muted-foreground hover:text-foreground"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu Content */}
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 space-y-4 border-t">
-            {/* Mobile Navigation */}
+            {/* Mobile Navigation Links */}
             <div className="space-y-2 px-4">
               <Link href="/articles" className="block px-3 py-2 text-base font-medium text-foreground" onClick={() => setIsMobileMenuOpen(false)}>Articles</Link>
               <Link href="/tutorials" className="block px-3 py-2 text-base font-medium text-foreground" onClick={() => setIsMobileMenuOpen(false)}>Tutorials</Link>
               <Link href="/about" className="block px-3 py-2 text-base font-medium text-foreground" onClick={() => setIsMobileMenuOpen(false)}>About</Link>
-              <Link href="/dashboard" className="block px-3 py-2 text-base font-medium text-foreground" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</Link>
+              {/* Only show Dashboard link in mobile if user is signed in */}
+              <SignedIn>
+                <Link href="/dashboard" className="block px-3 py-2 text-base font-medium text-foreground" onClick={() => setIsMobileMenuOpen(false)}>Dashboard</Link>
+              </SignedIn>
             </div>
 
             {/* Mobile Auth Buttons */}
             <SignedOut>
               <div className="px-4 flex flex-col gap-2">
-                <SignInButton><Button variant="outline" className="w-full">Login</Button></SignInButton>
-                <SignUpButton><Button className="w-full">Sign up</Button></SignUpButton>
+                <SignInButton mode="modal">
+                  <Button variant="outline" className="w-full">Login</Button>
+                </SignInButton>
+                <SignUpButton mode="modal">
+                  <Button className="w-full">Sign up</Button>
+                </SignUpButton>
               </div>
             </SignedOut>
           </div>

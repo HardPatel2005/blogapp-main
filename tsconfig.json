@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2022", // Or "ESNext" - often preferred for modern Node/browser environments
+    "lib": ["dom", "dom.iterable", "ES2022"], // Matching lib to target, or simply "esnext"
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "module": "esnext",
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,

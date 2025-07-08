@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
- 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -27,6 +27,12 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
+        {/*
+          CRUCIAL FIX: Ensure no whitespace (newlines, spaces, tabs)
+          between the <html> tag and the <body> tag.
+          The <body> tag should immediately follow the <html> tag on the next line,
+          or even on the same line if preferred, without any intervening characters.
+        */}
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
@@ -35,7 +41,7 @@ export default function RootLayout({
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-          > 
+          >
             <div>{children}</div>
           </ThemeProvider>
         </body>

@@ -1,6 +1,12 @@
 "use client";
 import React, { useState } from "react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader, // Import SheetHeader
+  SheetTitle,   // Import SheetTitle
+} from "@/components/ui/sheet";
 import { Button } from "../ui/button";
 import {
   BarChart,
@@ -10,6 +16,13 @@ import {
   Settings,
 } from "lucide-react";
 import Link from "next/link";
+
+// You will need to install this if you haven't already:
+// npm install @radix-ui/react-visually-hidden
+// or
+// yarn add @radix-ui/react-visually-hidden
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,6 +36,17 @@ const Sidebar = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-[250px]">
+          {/* Add SheetHeader and SheetTitle here for accessibility */}
+          <SheetHeader>
+            <SheetTitle asChild>
+              {/* This title will be hidden visually but available for screen readers */}
+              <VisuallyHidden>Main Navigation Menu</VisuallyHidden>
+            </SheetTitle>
+            {/* SheetDescription is optional but good for more context */}
+            {/* <SheetDescription>
+              Navigate through the application sections.
+            </SheetDescription> */}
+          </SheetHeader>
           <DashboardSidebar closeSheet={() => setIsOpen(false)} />
         </SheetContent>
       </Sheet>
@@ -40,7 +64,7 @@ function DashboardSidebar({ closeSheet }: { closeSheet?: () => void }) {
     <div className="h-full px-4 py-6">
       <div className="flex items-center gap-2 mb-8 px-2">
         <Link href={"/"}>
-        <span className="text-xl font-bold">ByteCode</span>
+          <span className="text-xl font-bold">ByteCode</span>
         </Link>
       </div>
       <nav className="space-y-1">
