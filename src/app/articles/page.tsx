@@ -1,74 +1,51 @@
-import {
-  AllArticlesPage,
-} from "@/components/articles/all-articles-page";
-import ArticleSearchInput from "@/components/articles/article-search-input";
+import { AllArticlesPage } from "@/components/articles/all-articles-page";
 import { Button } from "@/components/ui/button";
+import { Suspense } from "react";
 import { fetchArticleByQuery } from "@/lib/query/fetch-articles";
 import Link from "next/link";
 import { AllArticlesPageSkeleton } from "@/components/articles/all-articles-skeleton";
 
-// Optional: mark page as dynamic if using data-fetching
 export const dynamic = "force-dynamic";
 
 const ITEMS_PER_PAGE = 6;
 
-// ✅ Page Component for Next.js App Router
-// You no longer need to define ArticlePageProps here if global.d.ts is set up.
-// TypeScript will infer the type of searchParams from the augmented PageProps.
-export default async function Page({
-  searchParams, // Type is now inferred from global.d.ts
-}: {
-  // You can remove this explicit type here, or keep it if you prefer.
-  // If you remove it, TypeScript will use the global.d.ts definition.
-  // For maximum robustness against Vercel type errors, keeping it explicit here
-  // is often harmless and can reinforce the type.
-  searchParams?: { search?: string; page?: string };
-}) {
-  const searchText = searchParams?.search || "";
-  const currentPage = Number(searchParams?.page) || 1;
-  const skip = (currentPage - 1) * ITEMS_PER_PAGE;
-  const take = ITEMS_PER_PAGE;
+// ✅ Only use searchParams (no params at all)
+type PageProps = {
+  searchParams?: Promise<{
+    page?: string;
+  }>;
+};
 
-  const { articles, total } = await fetchArticleByQuery(searchText, skip, take);
+export default async function Page({ searchParams }: PageProps) {
+  const resolvedParams = await searchParams;
+  const currentPage = Number(resolvedParams?.page) || 1;
+  const skip = (currentPage - 1) * ITEMS_PER_PAGE;
+
+  const { articles, total } = await fetchArticleByQuery("", skip, ITEMS_PER_PAGE);
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        {/* Page Header */}
-        <div className="mb-12 space-y-6 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-            All Articles
-          </h1>
-
-          {/* ✅ Client-side input can be suspended */}
-          <ArticleSearchInput />
+      <main className="container mx-auto px-4 py-12">
+        <div className="mb-12 text-center">
+          <h1 className="text-4xl font-bold">All Articles</h1>
         </div>
 
-        {/* ✅ Do NOT wrap server components in Suspense */}
-        {articles.length === 0 ? (
-          <AllArticlesPageSkeleton />
-        ) : (
+        <Suspense fallback={<AllArticlesPageSkeleton />}>
           <AllArticlesPage articles={articles} />
-        )}
+        </Suspense>
 
-        {/* Pagination */}
         <div className="mt-12 flex justify-center gap-2">
-          <Link href={`?search=${searchText}&page=${currentPage - 1}`}>
+          <Link href={`?page=${currentPage - 1}`}>
             <Button variant="ghost" size="sm" disabled={currentPage === 1}>
               ← Prev
             </Button>
           </Link>
 
           {Array.from({ length: totalPages }).map((_, index) => (
-            <Link
-              key={index}
-              href={`?search=${searchText}&page=${index + 1}`}
-            >
+            <Link key={index} href={`?page=${index + 1}`}>
               <Button
-                variant={
-                  currentPage === index + 1 ? "destructive" : "ghost"
-                }
+                variant={currentPage === index + 1 ? "destructive" : "ghost"}
                 size="sm"
                 disabled={currentPage === index + 1}
               >
@@ -77,12 +54,8 @@ export default async function Page({
             </Link>
           ))}
 
-          <Link href={`?search=${searchText}&page=${currentPage + 1}`}>
-            <Button
-              variant="ghost"
-              size="sm"
-              disabled={currentPage === totalPages}
-            >
+          <Link href={`?page=${currentPage + 1}`}>
+            <Button variant="ghost" size="sm" disabled={currentPage === totalPages}>
               Next →
             </Button>
           </Link>

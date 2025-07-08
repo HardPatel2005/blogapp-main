@@ -1,9 +1,8 @@
 // next.config.ts
+/** @type {import('next').NextConfig} */
 
-// Fix this line:
-import type { NextConfig } from "next/types/config"; // Correct import for Next.js 15
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   images: {
     remotePatterns: [
       {
